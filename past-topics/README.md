@@ -17,7 +17,7 @@ IPAの採点講評から、問1・問6・問7・問8・問10の出題テーマ�
 - 問8の題材は年度ごとに大きく変わる（画面設計、クラス設計、スレッド、Git、レビューなど）
 
 ## ファイル
-各問の知識メモは `../knowledge/<問番号>_<分野>/`（問1=01_security、問6=06_database、問7=07_embedded、問8=08_development、問9=09_pm、問10=10_service）。
+各問の知識メモは `../knowledge/<問番号>_<分野>/`（問1=01_security、問6=06_database、問7=07_embedded、問8=08_development、問9=09_pm、問10=10_service）。フォルダ内のファイルは、01から順に通し番号を付けている（正答率が低かったテーマのファイルは各フォルダの末尾）。
 
 - 01_security.md（問1 情報セキュリティ）
 - 06_database.md（問6 データベース）
@@ -26,14 +26,14 @@ IPAの採点講評から、問1・問6・問7・問8・問10の出題テーマ�
 - 09_pm.md（問9 プロジェクトマネジメント。知識メモは `../knowledge/09_pm/`）
 - 10_service.md（問10 サービスマネジメント）
 
-## 「低い」テーマの詳しい解説と確認問題（選択式）
-平21春〜平30秋で「低い」とされたテーマは、各分野の次のファイルに、詳しい解説と選択式の確認問題をまとめた。見出しに「（低い）」と書いてあるので、優先度を落とすときの目安にする。
-- `../knowledge/01_security/02_low_themes.md`
-- `../knowledge/06_database/08_low_themes.md`
-- `../knowledge/07_embedded/02_low_themes.md`
-- `../knowledge/08_development/02_low_themes.md`
-- `../knowledge/09_pm/09_low_themes.md`
-- `../knowledge/10_service/11_low_themes.md`
+## 正答率が低かったテーマの詳しい解説と確認問題（選択式）
+平21春〜平30秋の講評で「正答率が低かった」とされたテーマは、各分野の次のファイルに、詳しい解説と選択式の確認問題をまとめた。見出しの末尾の「（低い）」は、IPA講評で正答率が低いとされたことを示す。
+- `../knowledge/01_security/02_low_accuracy_themes.md`
+- `../knowledge/06_database/08_low_accuracy_themes.md`
+- `../knowledge/07_embedded/02_low_accuracy_themes.md`
+- `../knowledge/08_development/02_low_accuracy_themes.md`
+- `../knowledge/09_pm/09_low_accuracy_themes.md`
+- `../knowledge/10_service/02_low_accuracy_themes.md`
 
 ## 全分野に共通する失点の型（講評の「低い」から）
 1. 本文・表・図の条件を読み落とす（小数点の桁、設問が指定した観点、本文にない項目の解答）
