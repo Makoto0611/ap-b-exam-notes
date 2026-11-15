@@ -19,7 +19,7 @@
 
 ## 使い方（最初の1回）
 ```
-cd sql-handson
+cd knowledge/06_database
 python3 sql.py reset                      # DBを作る
 python3 sql.py tables                     # 表と行数を見る
 python3 sql.py "SELECT * FROM 従業員"      # SQLを1つ実行
