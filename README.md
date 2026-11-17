@@ -19,9 +19,9 @@
 ## はじめに見るもの
 1. 空欄に何を書くか分からない → `method/blank-filling-method.md`
 2. どの分野が何度も出ているか知りたい → `past-topics/README.md`、`past-topics/00_overall_ratings.md`
-3. SQLの構文や、本文の言葉との対応を調べたい → `knowledge/06_database/cheatsheet.md`、`knowledge/06_database/04_condition_to_sql.md`
-4. 毎日10分のSQL練習 → `knowledge/06_database/02_exercises.md`
-5. E-R図・正規化・トランザクション → `knowledge/06_database/05_design_basics.md`
+3. SQLの構文や、本文の言葉との対応を調べたい → `knowledge/06_database/cheatsheet.md`、`knowledge/06_database/01_condition_to_sql.md`
+4. 毎日10分のSQL練習 → `knowledge/06_database/handson/02_exercises.md`
+5. E-R図・正規化・トランザクション → `knowledge/06_database/02_design_basics.md`
 6. PMの知識（RBS、EVM、クリティカルパスなど） → `knowledge/09_pm/01_risk.md` から順に
 7. 問1・7・8・10の知識 → `knowledge/` の各フォルダのファイル（「繰り返し出る、正答率が低かった知識」の対応表は `past-topics/` の各ファイル）。各フォルダ末尾の `*_low_accuracy_themes.md` は、正答率が低かったテーマの詳しい解説と確認問題
 

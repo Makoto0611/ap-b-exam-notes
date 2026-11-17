@@ -11,7 +11,7 @@
 試験の問6と同じく、**本文と条件表から、空欄に入るSQLを組み立てる**のが目的。目安は1題15〜20分。
 
 ## 進め方（1題ごと）
-1. 条件表を読む。空欄の記号ごとに、「どの行を見るか」を先に決める（`../../method/blank-filling-method.md` の4ステップ）
+1. 条件表を読む。空欄の記号ごとに、「どの行を見るか」を先に決める（`../../../method/blank-filling-method.md` の4ステップ）
 2. **A（定義）** を自分のファイル（例 `my_s1.sql`）に書いて実行する
    ```
    python3 sql.py -f my_s1.sql
@@ -77,7 +77,7 @@ CREATE TABLE 貸出 (
 
 <details><summary>ヒント（詰まったら）</summary>
 
-- ア・イ: 型 → 制約の順。DEFAULT は NOT NULL より前（`04_condition_to_sql.md`）
+- ア・イ: 型 → 制約の順。DEFAULT は NOT NULL より前（`01_condition_to_sql.md`）
 - ウ: 「空を許す」は、NOT NULL を**付けない**
 - エ・オ: 条件表の「主キー」「〜を参照」の行。列を書く場所と、種類を書く場所を分ける
 - カ: 列を絞るときは、権限名のあとに列名をかっこで書く

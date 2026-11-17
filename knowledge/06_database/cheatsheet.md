@@ -2,7 +2,7 @@
 
 過去問で実際に出た型を中心にまとめた。右端の「問題文の手がかり」は、**空欄を見たときに本文のどこを探すか**。自分の手がかりを足していく。
 
-関連: 条件の文→SQLの対応表と例は `04_condition_to_sql.md`、E-R図・正規化・トランザクションは `05_design_basics.md`。
+関連: 条件の文→SQLの対応表と例は `01_condition_to_sql.md`、E-R図・正規化・トランザクションは `02_design_basics.md`。
 
 出典メモ: 令4秋 問6（設問3 GRANT／CREATE TABLE、IPA講評で正答率が低い）、令7秋 問6（ALTER・CASCADE・INNER JOIN ON が×）、令和各年の講評で多い型（HAVING、外部結合、IS NULL など）。
 

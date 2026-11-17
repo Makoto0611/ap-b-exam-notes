@@ -218,4 +218,4 @@ ORDER BY 合計 DESC
 
 ## 参考
 - この分野の解説は、一般知識で書いた。SQLの文法は、使っているDBMSのマニュアルで確認する
-- `../knowledge/06_database/` の他の教材（`cheatsheet.md`、`05_design_basics.md`、`04_condition_to_sql.md`）も、外部資料では個別に確認していない
+- `../knowledge/06_database/` の他の教材（`cheatsheet.md`、`02_design_basics.md`、`01_condition_to_sql.md`）も、外部資料では個別に確認していない

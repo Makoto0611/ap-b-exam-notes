@@ -29,7 +29,7 @@ IPAの採点講評から、問1・問6・問7・問8・問10の出題テーマ�
 ## 正答率が低かったテーマの詳しい解説と確認問題（選択式）
 平21春〜平30秋の講評で「正答率が低かった」とされたテーマは、各分野の次のファイルに、詳しい解説と選択式の確認問題をまとめた。見出しの末尾の「（低い）」は、IPA講評で正答率が低いとされたことを示す。
 - `../knowledge/01_security/02_low_accuracy_themes.md`
-- `../knowledge/06_database/08_low_accuracy_themes.md`
+- `../knowledge/06_database/04_low_accuracy_themes.md`
 - `../knowledge/07_embedded/02_low_accuracy_themes.md`
 - `../knowledge/08_development/02_low_accuracy_themes.md`
 - `../knowledge/09_pm/09_low_accuracy_themes.md`

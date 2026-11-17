@@ -1,6 +1,6 @@
 import re, sqlite3, sys
 import os
-text = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '04_condition_to_sql.md'), encoding='utf-8').read()
+text = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '01_condition_to_sql.md'), encoding='utf-8').read()
 blocks = re.findall(r"```sql\n(.*?)```", text, re.S)
 
 PRE = """
