@@ -1,6 +1,6 @@
 -- 総合4 ポイント管理: データ（表を作ってから実行する）
-INSERT INTO 会員 VALUES ('M001','佐藤',300), ('M002','鈴木',160), ('M003','高橋',0);
-INSERT INTO ポイント履歴 VALUES
+INSERT INTO member VALUES ('M001','sato',300), ('M002','suzuki',160), ('M003','takahashi',0);
+INSERT INTO point_history VALUES
   (1,'M001',500,'2026-09-01'),
   (2,'M001',-200,'2026-09-15'),
   (3,'M002',150,'2026-10-01');

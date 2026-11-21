@@ -1,13 +1,13 @@
 -- 総合1 備品貸出管理: データ（表を作ってから実行する）
-INSERT INTO 課 VALUES ('K01','総務'), ('K02','開発'), ('K03','営業');
-INSERT INTO 社員 VALUES ('E001','佐藤','K01'), ('E002','鈴木','K02'), ('E003','高橋','K02'), ('E004','田中','K02');
-INSERT INTO 備品 (備品ID, 備品名, 区分, 状態) VALUES
-  ('P0001','ノートPC-A','PC','貸出'),
-  ('P0002','ノートPC-B','PC','在庫'),
-  ('P0003','モニタ','周辺','貸出'),
-  ('P0004','キーボード','周辺','在庫'),
-  ('P0005','マウス','周辺','在庫');
-INSERT INTO 貸出 VALUES
+INSERT INTO dept VALUES ('K01','general_affairs'), ('K02','development'), ('K03','sales');
+INSERT INTO employee VALUES ('E001','sato','K01'), ('E002','suzuki','K02'), ('E003','takahashi','K02'), ('E004','tanaka','K02');
+INSERT INTO equipment (equipment_id, equipment_name, category, status) VALUES
+  ('P0001','ノートPC-A','PC','loan'),
+  ('P0002','ノートPC-B','PC','in_stock'),
+  ('P0003','モニタ','peripheral','loan'),
+  ('P0004','キーボード','peripheral','in_stock'),
+  ('P0005','mouse','peripheral','in_stock');
+INSERT INTO loan VALUES
   (1,'P0001','E002','2026-10-01',NULL),
   (2,'P0003','E002','2026-10-05',NULL),
   (3,'P0002','E003','2026-09-20','2026-09-30'),

@@ -28,6 +28,27 @@
 
 # 総合1 備品貸出管理
 
+### 名前の対応表（日本語→英語）
+
+| 日本語 | 英語 |
+| --- | --- |
+| 備品 | `equipment` |
+| 備品ID | `equipment_id` |
+| 備品名 | `equipment_name` |
+| 区分 | `category` |
+| 状態 | `status` |
+| 貸出 | `loan` |
+| 貸出ID | `loan_id` |
+| 社員ID | `employee_id` |
+| 貸出日 | `loan_date` |
+| 返却日 | `return_date` |
+| 社員 | `employee` |
+| 鈴木 | `suzuki` |
+| マウス | `mouse` |
+| 総務 | `general_affairs` |
+| 開発 | `development` |
+| 営業 | `sales` |
+
 ## 場面
 社内の備品（PC・周辺機器）の貸出を管理する。備品は、**貸出中か在庫か**を状態で持つ。貸し出すと貸出表に1行ふえ、返却すると返却日が入る。
 
@@ -51,22 +72,22 @@
 
 ## A 定義・権限・変更
 ```sql
-CREATE TABLE 備品 (
-    備品ID  CHAR(5)     NOT NULL,
-    備品名  VARCHAR(30) NOT NULL,
-    区分    [ ア ],
-    状態    [ イ ],
-    PRIMARY KEY (備品ID)
+CREATE TABLE equipment (
+    equipment_id  CHAR(5)     NOT NULL,
+    equipment_name  VARCHAR(30) NOT NULL,
+    category    [ ア ],
+    status    [ イ ],
+    PRIMARY KEY (equipment_id)
 );
-CREATE TABLE 貸出 (
-    貸出ID  INTEGER  NOT NULL,
-    備品ID  CHAR(5)  NOT NULL,
-    社員ID  CHAR(4)  NOT NULL,
-    貸出日  DATE     NOT NULL,
-    返却日  [ ウ ],
+CREATE TABLE loan (
+    loan_id  INTEGER  NOT NULL,
+    equipment_id  CHAR(5)  NOT NULL,
+    employee_id  CHAR(4)  NOT NULL,
+    loan_date  DATE     NOT NULL,
+    return_date  [ ウ ],
     [ エ ],
     [ オ ],
-    FOREIGN KEY (社員ID) REFERENCES 社員 (社員ID)
+    FOREIGN KEY (employee_id) REFERENCES employee (employee_id)
 );
 ```
 （課表・社員表も、同じ要領で自分で書いて作る。貸出表より先に作ること）
@@ -87,9 +108,9 @@ CREATE TABLE 貸出 (
 ## B 検索
 データを入れてから試す（`python3 sql.py -f 06_s1_data.sql`）。
 
-- **ケ**: いま**2点以上**借りている社員の氏名と件数（期待: 鈴木 2）
-- **コ**: **一度も貸し出されていない**備品の名前（期待: マウス）
-- **サ**: 課ごとの**貸出中の件数**。貸出中がない課も 0 で出す（期待: 総務0・開発2・営業0）
+- **ケ**: いま**2点以上**借りている社員の氏名と件数（期待: suzuki 2）
+- **コ**: **一度も貸し出されていない**備品の名前（期待: mouse）
+- **サ**: 課ごとの**貸出中の件数**。貸出中がない課も 0 で出す（期待: general_affairs0・development2・sales0）
 
 <details><summary>ヒント</summary>
 
@@ -122,6 +143,24 @@ CREATE TABLE 貸出 (
 
 # 総合2 注文管理
 
+### 名前の対応表（日本語→英語）
+
+| 日本語 | 英語 |
+| --- | --- |
+| 商品 | `product` |
+| 商品ID | `product_id` |
+| 商品名 | `product_name` |
+| 単価 | `unit_price` |
+| 注文明細 | `order_item` |
+| 注文番号 | `order_no` |
+| 行番号 | `line_no` |
+| 数量 | `quantity` |
+| 注文 | `orders` |
+| 顧客ID | `customer_id` |
+| 顧客 | `customer` |
+| 注文日 | `order_date` |
+| 伊藤 | `ito` |
+
 ## 場面
 顧客が注文し、1回の注文に複数の商品が入る。注文を取り消すと、その明細も一緒に消える。
 
@@ -142,20 +181,20 @@ CREATE TABLE 貸出 (
 
 ## A 定義・権限
 ```sql
-CREATE TABLE 商品 (
-    商品ID  CHAR(4)     NOT NULL,
-    商品名  VARCHAR(30) NOT NULL,
-    単価    INTEGER     [ ア ],
-    PRIMARY KEY (商品ID)
+CREATE TABLE product (
+    product_id  CHAR(4)     NOT NULL,
+    product_name  VARCHAR(30) NOT NULL,
+    unit_price    INTEGER     [ ア ],
+    PRIMARY KEY (product_id)
 );
-CREATE TABLE 注文明細 (
-    注文番号  INTEGER  NOT NULL,
-    行番号    INTEGER  NOT NULL,
-    商品ID    CHAR(4)  NOT NULL,
-    数量      INTEGER  NOT NULL CHECK (数量 > 0),
+CREATE TABLE order_item (
+    order_no  INTEGER  NOT NULL,
+    line_no    INTEGER  NOT NULL,
+    product_id    CHAR(4)  NOT NULL,
+    quantity      INTEGER  NOT NULL CHECK (quantity > 0),
     [ イ ],
     [ ウ ],
-    FOREIGN KEY (商品ID) REFERENCES 商品 (商品ID)
+    FOREIGN KEY (product_id) REFERENCES product (product_id)
 );
 ```
 - **エ**: 経理課に、注文明細表の参照だけを許可する
@@ -174,15 +213,15 @@ CREATE TABLE 注文明細 (
 
 - **カ**: 注文ごとの合計金額（期待: 1→2000、2→3000、3→8000）
 - **キ**: 顧客ごとの合計金額が、**顧客ごとの合計の平均**を上回る顧客（期待: 佐々木 8000）
-- **ク**: 一度も注文していない顧客（期待: 伊藤）。EXISTS系で書け
+- **ク**: 一度も注文していない顧客（期待: ito）。EXISTS系で書け
 - **ケ**: 月ごとの注文件数（期待: 2026-10→1、2026-11→2）
 
 <details><summary>ヒント</summary>
 
 - カ: 注文明細と商品を結合 → 単価×数量の合計 → 注文番号ごと
 - キ: 顧客・注文・明細・商品を結合して顧客ごとに合計 → HAVING で、副問合せの結果（顧客ごとの合計の平均）と比べる。副問合せは、集計の集計になる
-- ク: `NOT EXISTS (SELECT 1 FROM 注文 WHERE 注文.顧客ID = 顧客.顧客ID)`
-- ケ: 日付の先頭7文字（`SUBSTR(注文日, 1, 7)`）で GROUP BY
+- ク: `NOT EXISTS (SELECT 1 FROM orders WHERE orders.customer_id = customer.customer_id)`
+- ケ: 日付の先頭7文字（`SUBSTR(order_date, 1, 7)`）で GROUP BY
 </details>
 
 ## C 更新
@@ -209,6 +248,20 @@ CREATE TABLE 注文明細 (
 
 # 総合3 会議室予約
 
+### 名前の対応表（日本語→英語）
+
+| 日本語 | 英語 |
+| --- | --- |
+| 予約 | `reservation` |
+| 室ID | `room_id` |
+| 予約日 | `reserve_date` |
+| 時間帯 | `time_slot` |
+| 利用者ID | `user_id` |
+| 利用者 | `room_user` |
+| 佐藤 | `sato` |
+| 定員 | `capacity` |
+| 会議室 | `room` |
+
 ## 場面
 会議室を、日付と時間帯（A=午前、B=午後）で予約する。**同じ会議室を、同じ日の同じ時間帯に、二重に予約できない**。
 
@@ -227,14 +280,14 @@ CREATE TABLE 注文明細 (
 
 ## A 定義・権限
 ```sql
-CREATE TABLE 予約 (
-    室ID      CHAR(3)  NOT NULL,
-    予約日    DATE     NOT NULL,
-    時間帯    CHAR(1)  [ ア ],
-    利用者ID  CHAR(3)  NOT NULL,
+CREATE TABLE reservation (
+    room_id      CHAR(3)  NOT NULL,
+    reserve_date    DATE     NOT NULL,
+    time_slot    CHAR(1)  [ ア ],
+    user_id  CHAR(3)  NOT NULL,
     [ イ ],
     [ ウ ],
-    FOREIGN KEY (利用者ID) REFERENCES 利用者 (利用者ID)
+    FOREIGN KEY (user_id) REFERENCES room_user (user_id)
 );
 ```
 - **エ**: 予約表の参照を全社員に、追加と削除を総務課だけに許可する（GRANT文を2つ）
@@ -250,16 +303,16 @@ CREATE TABLE 予約 (
 `06_s3_data.sql` を入れてから。
 
 - **オ**: 会議室ごとの予約件数。予約がない会議室も 0 で出す（期待: 大会議室3・小会議室2・面談室0）
-- **カ**: **同じ日に2件以上**予約した利用者（期待: 佐藤 2026-11-16）
+- **カ**: **同じ日に2件以上**予約した利用者（期待: sato 2026-11-16）
 - **キ**: 2026-11-16 の**午前（A）に空いている**会議室（期待: 面談室）
 - **ク**: 定員が**最大**の会議室の名前（期待: 大会議室）
 
 <details><summary>ヒント</summary>
 
-- オ: 会議室を左にして左外部結合 → `COUNT(予約.室ID)`（`COUNT(*)` だと0件が1になる）
+- オ: 会議室を左にして左外部結合 → `COUNT(reservation.room_id)`（`COUNT(*)` だと0件が1になる）
 - カ: 利用者×日付ごとに数える → HAVING で2以上
 - キ: 「予約が存在しない会議室」→ `NOT EXISTS`。副問合せに、室ID・日付・時間帯の3つの条件
-- ク: `WHERE 定員 = (SELECT MAX(定員) FROM 会議室)`
+- ク: `WHERE capacity = (SELECT MAX(capacity) FROM room)`
 </details>
 
 ## C 更新・エラーの確認
@@ -290,6 +343,21 @@ CREATE TABLE 予約 (
 
 # 総合4 ポイント管理
 
+### 名前の対応表（日本語→英語）
+
+| 日本語 | 英語 |
+| --- | --- |
+| 会員 | `member` |
+| 会員ID | `member_id` |
+| 氏名 | `name` |
+| ポイント | `points` |
+| ポイント履歴 | `point_history` |
+| 履歴ID | `history_id` |
+| 増減 | `delta` |
+| 日付 | `event_date` |
+| 鈴木 | `suzuki` |
+| 高橋 | `takahashi` |
+
 ## 場面
 会員がポイントをため、使う。**ポイントがマイナスになってはいけない**。ポイントの更新と履歴の追加は、同時に成功するか、同時に失敗しなければならない。
 
@@ -306,18 +374,18 @@ CREATE TABLE 予約 (
 
 ## A 定義・権限
 ```sql
-CREATE TABLE 会員 (
-    会員ID  CHAR(4)     NOT NULL,
-    氏名    VARCHAR(20) NOT NULL,
-    ポイント  INTEGER   [ ア ],
-    PRIMARY KEY (会員ID)
+CREATE TABLE member (
+    member_id  CHAR(4)     NOT NULL,
+    name    VARCHAR(20) NOT NULL,
+    points  INTEGER   [ ア ],
+    PRIMARY KEY (member_id)
 );
-CREATE TABLE ポイント履歴 (
-    履歴ID  INTEGER  NOT NULL,
-    会員ID  CHAR(4)  NOT NULL,
-    増減    INTEGER  NOT NULL,
-    日付    DATE     NOT NULL,
-    PRIMARY KEY (履歴ID),
+CREATE TABLE point_history (
+    history_id  INTEGER  NOT NULL,
+    member_id  CHAR(4)  NOT NULL,
+    delta    INTEGER  NOT NULL,
+    event_date    DATE     NOT NULL,
+    PRIMARY KEY (history_id),
     [ イ ]
 );
 ```
@@ -335,8 +403,8 @@ CREATE TABLE ポイント履歴 (
 `06_s4_data.sql` を入れてから。
 
 - **カ**: ランク表示。300以上は「ゴールド」、100以上は「シルバー」、それ以外は「ブロンズ」
-- **キ**: 履歴が1件もない会員（期待: 高橋）
-- **ク**: 会員表のポイントが、**履歴の合計と合わない**会員（期待: 鈴木 160 と 150）
+- **キ**: 履歴が1件もない会員（期待: takahashi）
+- **ク**: 会員表のポイントが、**履歴の合計と合わない**会員（期待: suzuki 160 と 150）
 - **ケ**: 月ごとの付与ポイントの合計（増減がプラスのものだけ。期待: 2026-09→500、2026-10→150）
 
 <details><summary>ヒント</summary>

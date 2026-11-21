@@ -3,10 +3,10 @@
 
 使い方:
   python3 sql.py reset                 # 01_setup.sql でDBを作り直す（毎回まっさらに戻せる）
-  python3 sql.py "SELECT * FROM 従業員"  # SQLを1つ実行して結果を表で表示
+  python3 sql.py "SELECT * FROM staff"  # SQLを1つ実行して結果を表で表示
   python3 sql.py -f my.sql             # ファイルのSQLをまとめて実行
   python3 sql.py tables                # 表の一覧と行数
-  python3 sql.py schema 契約            # 表の定義を表示
+  python3 sql.py schema contract            # 表の定義を表示
   python3 sql.py repl                  # 対話モード（空行で実行、quitで終了）
 """
 import os

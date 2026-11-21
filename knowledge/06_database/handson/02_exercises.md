@@ -12,13 +12,13 @@
 
 ## 表の構成（`python3 sql.py tables` / `schema 表名`）
 ```
-部署(部署ID, 部署名, 上位部署ID→部署)            … 自己参照
-従業員(従業員ID, 氏名, 部署ID→部署, 給与)
-通信事業者(事業者ID, 事業者名)
-契約(契約ID, 従業員ID→従業員, 事業者ID→通信事業者, 暗証番号 DEFAULT '1234')
-講座(講座コード, 講座名)
-開催(講座コード→講座, 開催番号, 開催日)           … 複合主キー
-受講(従業員ID→従業員, 講座コード, 開催番号, 結果)  … 複合外部キー＋ON DELETE CASCADE
+department(dept_id, department_name, parent_dept_id→department)            … 自己参照
+staff(staff_id, name, dept_id→department, salary)
+carrier(carrier_id, carrier_name)
+contract(contract_id, staff_id→staff, carrier_id→carrier, pin DEFAULT '1234')
+course(course_code, course_name)
+session(course_code→course, session_no, session_date)           … 複合主キー
+enrollment(staff_id→staff, course_code, session_no, result)  … 複合外部キー＋ON DELETE CASCADE
 ```
 意図的に入れてある「穴」: 従業員がいない部署（本社・総務部）、開催がない講座（SQL入門）、結果が NULL の受講、暗証番号が初期値の契約。
 
@@ -128,25 +128,25 @@
 
 **Q27** 次の空欄 ア〜エ を埋める。（令4秋・問6設問3の型）
 ```
-CREATE TABLE 契約 (
-    契約ID    CHAR(6)  NOT NULL,
-    暗証番号  ア       イ  NOT NULL,
-    PRIMARY KEY (契約ID),
-    ウ (事業者ID) REFERENCES 通信事業者 (事業者ID)
+CREATE TABLE contract (
+    contract_id    CHAR(6)  NOT NULL,
+    pin  ア       イ  NOT NULL,
+    PRIMARY KEY (contract_id),
+    ウ (carrier_id) REFERENCES carrier (carrier_id)
 );
-GRANT エ (契約ID, 暗証番号) ON 契約 TO ADMIN;
+GRANT エ (contract_id, pin) ON contract TO ADMIN;
 ```
 条件: 暗証番号は4桁の固定長文字、初期値は 1234。
 <details><summary>ヒント</summary>表4（条件の表）の文言と、空欄の位置を1つずつ対応させる。<b>ア＝型、イ＝初期値の指定</b>。</details>
 
 **Q28** 令7秋・問6の型。受講表に、開催（講座コード＋開催番号）を参照する外部キーがある。開催の行を削除したら、受講も自動で削除されるようにしたい。次の空欄を埋める。
 ```
-FOREIGN KEY (講座コード, 開催番号) REFERENCES 開催 (講座コード, 開催番号)
+FOREIGN KEY (course_code, session_no) REFERENCES session (course_code, session_no)
     ON DELETE  オ
 ```
 ```
-SELECT ... FROM 受講 AS t0 INNER JOIN 開催 AS t1
-    カ  t0.講座コード = t1.講座コード  AND  t0.開催番号 = t1.開催番号
+SELECT ... FROM enrollment AS t0 INNER JOIN session AS t1
+    カ  t0.course_code = t1.course_code  AND  t0.session_no = t1.session_no
 ```
 <details><summary>ヒント</summary>オ＝「連鎖して削除」を表す語。カ＝結合条件を書き始める語。Q9と Q22 をもう一度見る。</details>
 
@@ -156,3 +156,32 @@ SELECT ... FROM 受講 AS t0 INNER JOIN 開催 AS t1
 1. 今週間違えた Q を1つ選び、**自分の言葉で「何をするSQLか」** を1行で書く
 2. `cheatsheet.md` の「問題文の手がかり」の列に、自分の手がかりを1つ足す
 3. 令和4秋 問6 の設問3 を、答えを見ずにもう一度書いてみる
+
+## 名前の対応表（日本語→英語）
+
+SQLの例の表名・列名・値は、英語で書いてある。日本語との対応は次のとおり。
+
+| 日本語 | 英語 |
+| --- | --- |
+| 部署ID | `dept_id` |
+| 上位部署ID | `parent_dept_id` |
+| 従業員 | `staff` |
+| 氏名 | `name` |
+| 契約 | `contract` |
+| 部署 | `department` |
+| 部署名 | `department_name` |
+| 従業員ID | `staff_id` |
+| 給与 | `salary` |
+| 通信事業者 | `carrier` |
+| 事業者ID | `carrier_id` |
+| 事業者名 | `carrier_name` |
+| 契約ID | `contract_id` |
+| 暗証番号 | `pin` |
+| 講座 | `course` |
+| 講座コード | `course_code` |
+| 講座名 | `course_name` |
+| 開催 | `session` |
+| 開催番号 | `session_no` |
+| 開催日 | `session_date` |
+| 受講 | `enrollment` |
+| 結果 | `result` |

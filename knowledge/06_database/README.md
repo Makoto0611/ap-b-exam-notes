@@ -23,7 +23,7 @@
 cd knowledge/06_database/handson
 python3 sql.py reset                      # DBを作る
 python3 sql.py tables                     # 表と行数を見る
-python3 sql.py "SELECT * FROM 従業員"      # SQLを1つ実行
+python3 sql.py "SELECT * FROM staff"      # SQLを1つ実行
 python3 sql.py repl                       # 対話モード（空行で実行）
 ```
 Python 3 の標準ライブラリだけで動くので、インストールは不要。
@@ -35,3 +35,11 @@ Python 3 の標準ライブラリだけで動くので、インストールは�
 ## 注意
 - 過去問の本文そのものは入れていない。表と値は、型を再現した自作のもの
 - GRANT/REVOKE は SQLite にないので、書いて答えと見比べる
+
+## 名前の対応表（日本語→英語）
+
+SQLの例の表名・列名・値は、英語で書いてある。日本語との対応は次のとおり。
+
+| 日本語 | 英語 |
+| --- | --- |
+| 従業員 | `staff` |

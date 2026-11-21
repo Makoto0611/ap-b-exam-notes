@@ -4,16 +4,16 @@ text = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '01_c
 blocks = re.findall(r"```sql\n(.*?)```", text, re.S)
 
 PRE = """
-CREATE TABLE 顧客 (顧客ID CHAR(5) NOT NULL, 氏名 VARCHAR(30) NOT NULL, 電話番号 VARCHAR(15), 地域 VARCHAR(10), PRIMARY KEY (顧客ID));
-CREATE TABLE 商品 (商品ID CHAR(5) NOT NULL, 商品名 VARCHAR(30) NOT NULL, 単価 INTEGER NOT NULL, PRIMARY KEY (商品ID));
-CREATE TABLE 注文 (注文ID CHAR(6) NOT NULL, 顧客ID CHAR(5) NOT NULL, 注文日 DATE NOT NULL, 状態 CHAR(1) DEFAULT 'N' NOT NULL, PRIMARY KEY (注文ID), FOREIGN KEY (顧客ID) REFERENCES 顧客 (顧客ID));
-CREATE TABLE 明細 (注文ID CHAR(6) NOT NULL, 明細番号 INTEGER NOT NULL, 商品ID CHAR(5) NOT NULL, 数量 INTEGER NOT NULL, PRIMARY KEY (注文ID, 明細番号), FOREIGN KEY (注文ID) REFERENCES 注文 (注文ID) ON DELETE CASCADE, FOREIGN KEY (商品ID) REFERENCES 商品 (商品ID));
-CREATE TABLE 出荷 (注文ID CHAR(6) NOT NULL, 明細番号 INTEGER NOT NULL, 出荷日 DATE NOT NULL, PRIMARY KEY (注文ID, 明細番号));
-INSERT INTO 顧客 VALUES ('C0001','山田','090','東京'),('C0002','鈴木',NULL,'大阪'),('C0003','山本',NULL,'東京'),('C0004','佐藤','080','福岡');
-INSERT INTO 商品 VALUES ('P0001','A',100),('P0002','B',300),('P0003','C',500);
-INSERT INTO 注文 VALUES ('O00001','C0001','2026-01-01','N'),('O00002','C0001','2026-01-02','C'),('O00003','C0002','2026-01-03','N');
-INSERT INTO 明細 VALUES ('O00001',1,'P0001',2),('O00001',2,'P0002',1),('O00002',1,'P0003',1),('O00003',1,'P0001',5);
-INSERT INTO 出荷 VALUES ('O00001',1,'2026-01-05'),('O00003',1,'2026-01-06');
+CREATE TABLE customer (customer_id CHAR(5) NOT NULL, name VARCHAR(30) NOT NULL, phone VARCHAR(15), region VARCHAR(10), PRIMARY KEY (customer_id));
+CREATE TABLE product (product_id CHAR(5) NOT NULL, product_name VARCHAR(30) NOT NULL, unit_price INTEGER NOT NULL, PRIMARY KEY (product_id));
+CREATE TABLE orders (order_id CHAR(6) NOT NULL, customer_id CHAR(5) NOT NULL, order_date DATE NOT NULL, status CHAR(1) DEFAULT 'N' NOT NULL, PRIMARY KEY (order_id), FOREIGN KEY (customer_id) REFERENCES customer (customer_id));
+CREATE TABLE order_detail (order_id CHAR(6) NOT NULL, detail_no INTEGER NOT NULL, product_id CHAR(5) NOT NULL, quantity INTEGER NOT NULL, PRIMARY KEY (order_id, detail_no), FOREIGN KEY (order_id) REFERENCES orders (order_id) ON DELETE CASCADE, FOREIGN KEY (product_id) REFERENCES product (product_id));
+CREATE TABLE shipment (order_id CHAR(6) NOT NULL, detail_no INTEGER NOT NULL, ship_date DATE NOT NULL, PRIMARY KEY (order_id, detail_no));
+INSERT INTO customer VALUES ('C0001','yamada','090','tokyo'),('C0002','suzuki',NULL,'osaka'),('C0003','yamamoto',NULL,'tokyo'),('C0004','sato','080','fukuoka');
+INSERT INTO product VALUES ('P0001','A',100),('P0002','B',300),('P0003','C',500);
+INSERT INTO orders VALUES ('O00001','C0001','2026-01-01','N'),('O00002','C0001','2026-01-02','C'),('O00003','C0002','2026-01-03','N');
+INSERT INTO order_detail VALUES ('O00001',1,'P0001',2),('O00001',2,'P0002',1),('O00002',1,'P0003',1),('O00003',1,'P0001',5);
+INSERT INTO shipment VALUES ('O00001',1,'2026-01-05'),('O00003',1,'2026-01-06');
 """
 
 ok = skip = bad = 0
@@ -30,8 +30,8 @@ for i, b in enumerate(blocks, 1):
     for name in re.findall(r"CREATE TABLE (\S+) \(", b):
         con.execute(f'DROP TABLE IF EXISTS {name}')
     con.execute('PRAGMA foreign_keys = ON')
-    if 'DROP COLUMN 電話番号2' in b:
-        con.execute('ALTER TABLE 顧客 ADD 電話番号2 VARCHAR(15)')  # 直前の例の続き
+    if 'DROP COLUMN phone2' in b:
+        con.execute('ALTER TABLE customer ADD phone2 VARCHAR(15)')  # 直前の例の続き
     try:
         stmts = [s for s in re.split(r";\s*\n|;\s*$", b) if s.strip()]
         for s in stmts:

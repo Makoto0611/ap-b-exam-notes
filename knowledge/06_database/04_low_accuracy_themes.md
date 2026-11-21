@@ -90,7 +90,7 @@
 
 ### 確認問題
 **問1** 表「商品」のうち、「備考」が入っていない行を選ぶ文として、正しいものはどれか。
-ア `SELECT * FROM 商品 WHERE 備考 = NULL`　イ `SELECT * FROM 商品 WHERE 備考 IS NULL`　ウ `SELECT * FROM 商品 WHERE 備考 = ''`　エ `SELECT * FROM 商品 WHERE 備考 <> NULL`
+ア `SELECT * FROM product WHERE note = NULL`　イ `SELECT * FROM product WHERE note IS NULL`　ウ `SELECT * FROM product WHERE note = ''`　エ `SELECT * FROM product WHERE note <> NULL`
 
 <details><summary>答えと解説</summary>
 イ。NULLは、`IS NULL` で調べる。アとエは、常に行が選ばれない。
@@ -117,23 +117,23 @@
 - 例（自己結合）: 社員表に、上司の社員番号の列がある。社員とその上司の名前を、並べて出す。
 
 ```
-SELECT e.氏名, b.氏名
-FROM 社員 e
-INNER JOIN 社員 b ON e.上司番号 = b.社員番号
+SELECT e.name, b.name
+FROM employee e
+INNER JOIN employee b ON e.上司番号 = b.社員番号
 ```
 
 - 例（副問合せ）: 平均より高い単価の商品。
 
 ```
-SELECT 商品名 FROM 商品
-WHERE 単価 > (SELECT AVG(単価) FROM 商品)
+SELECT product_name FROM product
+WHERE unit_price > (SELECT AVG(unit_price) FROM product)
 ```
 
 - 副問合せの結果を、別の表のように結合して使う書き方もある（平25秋の講評は、副問合せを使ったSQLの正答率が低かった、と述べている）。
 
 ### 確認問題
 **問1** 平均単価より高い商品を選ぶ文として、正しいものはどれか。
-ア `SELECT 商品名 FROM 商品 WHERE 単価 > AVG(単価)`　イ `SELECT 商品名 FROM 商品 WHERE 単価 > (SELECT AVG(単価) FROM 商品)`　ウ `SELECT 商品名 FROM 商品 HAVING 単価 > AVG(単価)`　エ `SELECT AVG(単価) FROM 商品 WHERE 単価 > 商品名`
+ア `SELECT product_name FROM product WHERE unit_price > AVG(unit_price)`　イ `SELECT product_name FROM product WHERE unit_price > (SELECT AVG(unit_price) FROM product)`　ウ `SELECT product_name FROM product HAVING unit_price > AVG(unit_price)`　エ `SELECT AVG(unit_price) FROM product WHERE unit_price > product_name`
 
 <details><summary>答えと解説</summary>
 イ。WHERE句の中では、集計関数を直接使えない。副問合せで、先に平均を求める。
@@ -159,17 +159,17 @@ WHERE 単価 > (SELECT AVG(単価) FROM 商品)
 - 例: 部署ごとの売上の合計を、多い順に並べる。
 
 ```
-SELECT 部署, SUM(売上) AS 合計
+SELECT department, SUM(売上) AS total
 FROM 売上表
-GROUP BY 部署
-ORDER BY 合計 DESC
+GROUP BY department
+ORDER BY total DESC
 ```
 
 - `GROUP BY` に書いていない列は、`SELECT` に、そのまま書けない（集計関数を使う）。
 
 ### 確認問題
 **問1** 部署ごとの売上の合計を、多い順に並べる。空欄に入る語はどれか。
-`SELECT 部署, SUM(売上) AS 合計 FROM 売上表 GROUP BY 部署 ORDER BY 合計 [　　]`
+`SELECT department, SUM(売上) AS total FROM 売上表 GROUP BY department ORDER BY total [　　]`
 ア ASC　イ DESC　ウ DISTINCT　エ HAVING
 
 <details><summary>答えと解説</summary>
@@ -181,12 +181,12 @@ ORDER BY 合計 DESC
 ## 6. 権限の制御（GRANT）、関連の多重度、マスタの更新と履歴（低い。平30秋、平23秋、平29春）
 
 ### 6-1 権限の制御
-- `GRANT 権限 ON 表 TO 利用者` で、利用者に権限を与える。
-- 例: `GRANT SELECT ON 社員 TO 人事担当` は、社員表の参照だけを、人事担当に許可する。
+- `GRANT 権限 ON 表 TO room_user` で、利用者に権限を与える。
+- 例: `GRANT SELECT ON employee TO 人事担当` は、社員表の参照だけを、人事担当に許可する。
 - 列や行を限定して見せたいときは、ビュー（必要な列・行だけの仮想の表）を作り、そのビューに権限を与える。（一般知識）
 
 **問1** 営業担当に、顧客表の参照だけを許可する文として、正しいものはどれか。
-ア `GRANT SELECT ON 顧客 TO 営業担当`　イ `GRANT ALL ON 顧客 TO 営業担当`　ウ `GRANT UPDATE ON 顧客 TO 営業担当`　エ `REVOKE SELECT ON 顧客 FROM 営業担当`
+ア `GRANT SELECT ON customer TO 営業担当`　イ `GRANT ALL ON customer TO 営業担当`　ウ `GRANT UPDATE ON customer TO 営業担当`　エ `REVOKE SELECT ON customer FROM 営業担当`
 
 <details><summary>答えと解説</summary>
 ア。参照だけなので、SELECT権限。イは全ての権限、ウは更新、エは取り上げる。
@@ -219,3 +219,20 @@ ORDER BY 合計 DESC
 ## 参考
 - この分野の解説は、一般知識で書いた。SQLの文法は、使っているDBMSのマニュアルで確認する
 - `../knowledge/06_database/` の他の教材（`cheatsheet.md`、`02_design_basics.md`、`01_condition_to_sql.md`）も、外部資料では個別に確認していない
+
+## 名前の対応表（日本語→英語）
+
+SQLの例の表名・列名・値は、英語で書いてある。日本語との対応は次のとおり。
+
+| 日本語 | 英語 |
+| --- | --- |
+| 商品 | `product` |
+| 備考 | `note` |
+| 氏名 | `name` |
+| 社員 | `employee` |
+| 商品名 | `product_name` |
+| 単価 | `unit_price` |
+| 合計 | `total` |
+| 利用者 | `room_user` |
+| 顧客 | `customer` |
+| 部署 | `department` |
