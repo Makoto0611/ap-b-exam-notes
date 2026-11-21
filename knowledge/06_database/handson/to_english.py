@@ -71,6 +71,12 @@ MAP = {
     "伊藤": "ito", "A通信": "carrier_a", "B通信": "carrier_b",
     "セキュリティ基礎": "security_basics", "プロジェクト管理": "project_mgmt",
     "SQL入門": "sql_intro", "合格": "pass", "不合格": "fail",
+    # 総合1〜4のデータの値・別名
+    "ノートPC": "laptop", "モニタ": "monitor", "キーボード": "keyboard",
+    "佐々木": "sasaki", "ペン": "pen", "ノート": "notebook", "バッグ": "bag",
+    "小計": "subtotal", "年月": "year_month", "注文1の明細": "order1_items",
+    "大会議室": "large_room", "小会議室": "small_room", "面談室": "interview_room",
+    "残り": "remaining", "付与": "granted", "中村": "nakamura", "全社員": "all_staff",
 }
 
 TOKEN = re.compile(r"[A-Za-z0-9_]*[ぁ-んァ-ヶー一-龥々][ぁ-んァ-ヶー一-龥々A-Za-z0-9_]*")
@@ -204,6 +210,8 @@ def process_md(text, stat_for_section, path):
         def inline(m):
             return "`" + conv(m.group(1), cur, os.path.basename(path) + " (inline)", report=False) + "`"
         new = re.sub(r"`([^`\n]+)`", inline, line)
+        new = re.sub(r"(<code>)(.*?)(</code>)",
+                     lambda m: m.group(1) + conv(m.group(2), cur, os.path.basename(path) + " (code tag)", report=False) + m.group(3), new)
         new = EXPECT.sub(lambda m: m.group(1) + conv(m.group(2), cur, os.path.basename(path) + " (期待)", True, PURE_JP), new)
         out.append(new)
     return out, sections

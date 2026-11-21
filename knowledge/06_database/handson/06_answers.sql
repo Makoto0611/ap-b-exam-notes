@@ -27,8 +27,8 @@ CREATE TABLE employee (
 CREATE TABLE equipment (
     equipment_id  CHAR(5)     NOT NULL,
     equipment_name  VARCHAR(30) NOT NULL,
-    category    CHAR(2)     NOT NULL CHECK (category IN ('PC', 'peripheral')),   -- [ア]
-    status    CHAR(2)     DEFAULT 'in_stock' NOT NULL,                   -- [イ]
+    category    VARCHAR(10) NOT NULL CHECK (category IN ('PC', 'peripheral')),   -- [ア]
+    status    VARCHAR(10) DEFAULT 'in_stock' NOT NULL,                   -- [イ]
     PRIMARY KEY (equipment_id)
 );
 CREATE TABLE loan (
@@ -41,7 +41,7 @@ CREATE TABLE loan (
     FOREIGN KEY (equipment_id) REFERENCES equipment (equipment_id),                  -- [オ]
     FOREIGN KEY (employee_id) REFERENCES employee (employee_id)
 );
--- [カ] GRANT SELECT (備品ID, 備品名, 状態) ON 備品 TO 総務課;
+-- [カ] GRANT SELECT (equipment_id, equipment_name, status) ON equipment TO general_affairs_dept;
 ALTER TABLE equipment ADD note VARCHAR(50);                              -- [キ]
 CREATE VIEW on_loan AS                                               -- [ク]
     SELECT equipment_id, employee_id, loan_date FROM loan WHERE return_date IS NULL;
@@ -50,10 +50,10 @@ CREATE VIEW on_loan AS                                               -- [ク]
 INSERT INTO dept VALUES ('K01','general_affairs'), ('K02','development'), ('K03','sales');
 INSERT INTO employee VALUES ('E001','sato','K01'), ('E002','suzuki','K02'), ('E003','takahashi','K02'), ('E004','tanaka','K02');
 INSERT INTO equipment (equipment_id, equipment_name, category, status) VALUES
-  ('P0001','ノートPC-A','PC','loan'),
-  ('P0002','ノートPC-B','PC','in_stock'),
-  ('P0003','モニタ','peripheral','loan'),
-  ('P0004','キーボード','peripheral','in_stock'),
+  ('P0001','laptop-A','PC','loan'),
+  ('P0002','laptop-B','PC','in_stock'),
+  ('P0003','monitor','peripheral','loan'),
+  ('P0004','keyboard','peripheral','in_stock'),
   ('P0005','mouse','peripheral','in_stock');
 INSERT INTO loan VALUES
   (1,'P0001','E002','2026-10-01',NULL),
@@ -130,11 +130,11 @@ CREATE TABLE order_item (
     FOREIGN KEY (order_no) REFERENCES orders (order_no) ON DELETE CASCADE,  -- [ウ]
     FOREIGN KEY (product_id) REFERENCES product (product_id)
 );
--- [エ] GRANT SELECT ON 注文明細 TO 経理課;
--- [オ] GRANT UPDATE (単価) ON 商品 TO 仕入課;
+-- [エ] GRANT SELECT ON order_item TO accounting_dept;
+-- [オ] GRANT UPDATE (unit_price) ON product TO purchasing_dept;
 
-INSERT INTO customer VALUES ('C0001','yamada','tokyo'), ('C0002','佐々木','osaka'), ('C0003','ito','tokyo');
-INSERT INTO product VALUES ('G001','ペン',100), ('G002','ノート',200), ('G003','バッグ',3000);
+INSERT INTO customer VALUES ('C0001','yamada','tokyo'), ('C0002','sasaki','osaka'), ('C0003','ito','tokyo');
+INSERT INTO product VALUES ('G001','pen',100), ('G002','notebook',200), ('G003','bag',3000);
 INSERT INTO orders VALUES (1,'C0001','2026-10-03'), (2,'C0001','2026-11-02'), (3,'C0002','2026-11-05');
 INSERT INTO order_item VALUES
   (1,1,'G001',10), (1,2,'G002',5),
@@ -154,8 +154,8 @@ SELECT customer.customer_name, SUM(product.unit_price * order_item.quantity) AS 
   INNER JOIN product ON order_item.product_id = product.product_id
  GROUP BY customer.customer_id, customer.customer_name
 HAVING SUM(product.unit_price * order_item.quantity) >
-       (SELECT AVG(小計) FROM
-           (SELECT SUM(product.unit_price * order_item.quantity) AS 小計
+       (SELECT AVG(subtotal) FROM
+           (SELECT SUM(product.unit_price * order_item.quantity) AS subtotal
               FROM orders
               INNER JOIN order_item ON orders.order_no = order_item.order_no
               INNER JOIN product ON order_item.product_id = product.product_id
@@ -166,7 +166,7 @@ SELECT customer_name FROM customer
  WHERE NOT EXISTS (SELECT 1 FROM orders WHERE orders.customer_id = customer.customer_id);
 
 -- [ケ] 月ごとの注文件数（結果: 2026-10→1、2026-11→2）
-SELECT SUBSTR(order_date, 1, 7) AS 年月, COUNT(*) AS cnt
+SELECT SUBSTR(order_date, 1, 7) AS year_month, COUNT(*) AS cnt
   FROM orders GROUP BY SUBSTR(order_date, 1, 7);
 
 -- [コ] 値上げ: 1000円未満は+10円、1000円以上は+100円（1回のUPDATEで）
@@ -176,7 +176,7 @@ SELECT * FROM product;
 
 -- [サ] 注文1を削除 → 明細も連鎖して消える
 DELETE FROM orders WHERE order_no = 1;
-SELECT COUNT(*) AS 注文1の明細 FROM order_item WHERE order_no = 1;   -- 0
+SELECT COUNT(*) AS order1_items FROM order_item WHERE order_no = 1;   -- 0
 
 
 -- ############ 総合3 会議室予約 ############
@@ -204,9 +204,9 @@ CREATE TABLE reservation (
     FOREIGN KEY (room_id) REFERENCES room (room_id),                    -- [ウ]
     FOREIGN KEY (user_id) REFERENCES room_user (user_id)
 );
--- [エ] GRANT SELECT ON 予約 TO 全社員;  GRANT INSERT, DELETE ON 予約 TO 総務課;
+-- [エ] GRANT SELECT ON reservation TO all_staff;  GRANT INSERT, DELETE ON reservation TO general_affairs_dept;
 
-INSERT INTO room VALUES ('R01','大会議室',20), ('R02','小会議室',6), ('R03','面談室',2);
+INSERT INTO room VALUES ('R01','large_room',20), ('R02','small_room',6), ('R03','interview_room',2);
 INSERT INTO room_user VALUES ('U01','sato'), ('U02','suzuki'), ('U03','takahashi');
 INSERT INTO reservation VALUES
   ('R01','2026-11-16','A','U01'),
@@ -238,10 +238,10 @@ SELECT room_name FROM room WHERE capacity = (SELECT MAX(capacity) FROM room);
 
 -- [ケ] 予約の取消（主キーの3列をすべて指定する）
 DELETE FROM reservation WHERE room_id = 'R02' AND reserve_date = '2026-11-17' AND time_slot = 'A';
-SELECT COUNT(*) AS 残り FROM reservation;   -- 4
+SELECT COUNT(*) AS remaining FROM reservation;   -- 4
 
 -- 二重予約は主キー違反で失敗する（試す用。実行するとエラーになる）
--- INSERT INTO 予約 VALUES ('R01','2026-11-16','A','U03');
+-- INSERT INTO reservation VALUES ('R01','2026-11-16','A','U03');
 
 
 -- ############ 総合4 ポイント管理 ############
@@ -262,9 +262,9 @@ CREATE TABLE point_history (
     PRIMARY KEY (history_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id)                   -- [イ]
 );
--- [ウ] GRANT SELECT ON ポイント履歴 TO 経理課;
--- [エ] GRANT SELECT, UPDATE (ポイント) ON 会員 TO 会員システム;
--- [オ] REVOKE DELETE ON ポイント履歴 FROM 会員システム;
+-- [ウ] GRANT SELECT ON point_history TO accounting_dept;
+-- [エ] GRANT SELECT, UPDATE (points) ON member TO member_system;
+-- [オ] REVOKE DELETE ON point_history FROM member_system;
 
 INSERT INTO member VALUES ('M001','sato',300), ('M002','suzuki',160), ('M003','takahashi',0);
 INSERT INTO point_history VALUES
@@ -291,7 +291,7 @@ SELECT name, points,
  WHERE points <> COALESCE((SELECT SUM(delta) FROM point_history WHERE point_history.member_id = member.member_id), 0);
 
 -- [ケ] 月ごとの付与ポイント合計（増減がプラスのものだけ）
-SELECT SUBSTR(event_date, 1, 7) AS 年月, SUM(delta) AS 付与
+SELECT SUBSTR(event_date, 1, 7) AS year_month, SUM(delta) AS granted
   FROM point_history WHERE delta > 0 GROUP BY SUBSTR(event_date, 1, 7);
 
 -- [コ] M001 が100ポイント使う（会員表の更新と履歴の追加を、1つのトランザクションで）
@@ -303,5 +303,5 @@ SELECT member_id, points FROM member ORDER BY member_id;
 
 -- [サ] 残高を超えて使うと CHECK 違反になる → ROLLBACK で全部戻す（実行するとエラー）
 -- BEGIN;
--- UPDATE 会員 SET ポイント = ポイント - 1000 WHERE 会員ID = 'M003';
+-- UPDATE member SET points = points - 1000 WHERE member_id = 'M003';
 -- ROLLBACK;

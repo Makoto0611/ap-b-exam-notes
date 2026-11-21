@@ -56,7 +56,7 @@ SELECT name FROM staff
 WHERE EXISTS (SELECT 1 FROM enrollment WHERE enrollment.staff_id = staff.staff_id);
 
 -- Q15
-INSERT INTO staff (staff_id, name, dept_id, salary) VALUES ('E0007', '中村', 'D04', 300000);
+INSERT INTO staff (staff_id, name, dept_id, salary) VALUES ('E0007', 'nakamura', 'D04', 300000);
 SELECT * FROM staff WHERE staff_id = 'E0007';
 
 -- Q16  （先に同じWHEREでSELECTして対象を確認する）

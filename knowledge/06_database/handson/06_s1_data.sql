@@ -2,10 +2,10 @@
 INSERT INTO dept VALUES ('K01','general_affairs'), ('K02','development'), ('K03','sales');
 INSERT INTO employee VALUES ('E001','sato','K01'), ('E002','suzuki','K02'), ('E003','takahashi','K02'), ('E004','tanaka','K02');
 INSERT INTO equipment (equipment_id, equipment_name, category, status) VALUES
-  ('P0001','ノートPC-A','PC','loan'),
-  ('P0002','ノートPC-B','PC','in_stock'),
-  ('P0003','モニタ','peripheral','loan'),
-  ('P0004','キーボード','peripheral','in_stock'),
+  ('P0001','laptop-A','PC','loan'),
+  ('P0002','laptop-B','PC','in_stock'),
+  ('P0003','monitor','peripheral','loan'),
+  ('P0004','keyboard','peripheral','in_stock'),
   ('P0005','mouse','peripheral','in_stock');
 INSERT INTO loan VALUES
   (1,'P0001','E002','2026-10-01',NULL),
