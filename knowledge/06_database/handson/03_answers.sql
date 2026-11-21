@@ -46,7 +46,7 @@ SELECT dept_id, COUNT(*) AS headcount FROM staff GROUP BY dept_id;
 SELECT dept_id, COUNT(*) AS headcount FROM staff GROUP BY dept_id HAVING COUNT(*) >= 3;
 
 -- Q12
-SELECT dept_id, AVG(salary) AS 平均給与 FROM staff GROUP BY dept_id ORDER BY 平均給与 DESC;
+SELECT dept_id, AVG(salary) AS avg_salary FROM staff GROUP BY dept_id ORDER BY avg_salary DESC;
 
 -- Q13
 SELECT name, salary FROM staff WHERE salary > (SELECT AVG(salary) FROM staff);
@@ -69,30 +69,30 @@ INSERT INTO contract (contract_id, staff_id, carrier_id) VALUES ('C00004', 'E000
 SELECT * FROM contract WHERE contract_id = 'C00004';
 
 -- Q18  （参照先の部署'D99'が無いので、外部キー制約でエラーになる）
-INSERT INTO staff (staff_id, name, dept_id, salary) VALUES ('E0008', '小林', 'D99', 300000);
+INSERT INTO staff (staff_id, name, dept_id, salary) VALUES ('E0008', 'kobayashi', 'D99', 300000);
 
 -- Q19
-CREATE TABLE 端末 (
-    端末ID  CHAR(5)     NOT NULL,
-    機種名  VARCHAR(20) NOT NULL,
-    status    CHAR(1)     DEFAULT 'A' NOT NULL,
-    PRIMARY KEY (端末ID)
+CREATE TABLE device (
+    device_id    CHAR(5)     NOT NULL,
+    model_name   VARCHAR(20) NOT NULL,
+    status       CHAR(1)     DEFAULT 'A' NOT NULL,
+    PRIMARY KEY (device_id)
 );
 
 -- Q20
-ALTER TABLE staff ADD 入社日 DATE;
+ALTER TABLE staff ADD hire_date DATE;
 SELECT * FROM staff;
 
 -- Q21  （SQLiteでは作り直しで試す。試験の文では下の形で書く）
---   ALTER TABLE 端末 ADD 従業員ID CHAR(5);
---   ALTER TABLE 端末 ADD FOREIGN KEY (従業員ID) REFERENCES 従業員 (従業員ID);
-DROP TABLE 端末;
-CREATE TABLE 端末 (
-    端末ID    CHAR(5)     NOT NULL,
-    機種名    VARCHAR(20) NOT NULL,
-    status      CHAR(1)     DEFAULT 'A' NOT NULL,
-    staff_id  CHAR(5),
-    PRIMARY KEY (端末ID),
+--   ALTER TABLE device ADD staff_id CHAR(5);
+--   ALTER TABLE device ADD FOREIGN KEY (staff_id) REFERENCES staff (staff_id);
+DROP TABLE device;
+CREATE TABLE device (
+    device_id    CHAR(5)     NOT NULL,
+    model_name   VARCHAR(20) NOT NULL,
+    status       CHAR(1)     DEFAULT 'A' NOT NULL,
+    staff_id     CHAR(5),
+    PRIMARY KEY (device_id),
     FOREIGN KEY (staff_id) REFERENCES staff (staff_id)
 );
 
@@ -102,12 +102,12 @@ DELETE FROM session WHERE course_code = 'K01' AND session_no = 1;
 SELECT * FROM enrollment;
 
 -- Q23  （DELETEは行を消す。DROPは表ごと消す）
-DROP TABLE 端末;
+DROP TABLE device;
 
 -- Q24（書くだけ。SQLiteでは実行できない）
---   GRANT SELECT (従業員ID, 氏名) ON 従業員 TO 一般ユーザ;
+--   GRANT SELECT (staff_id, name) ON staff TO general_user;
 -- Q25（書くだけ）
---   REVOKE UPDATE ON 従業員 FROM 人事課;
+--   REVOKE UPDATE ON staff FROM hr_dept;
 
 -- Q26
 BEGIN;
@@ -120,3 +120,32 @@ SELECT name, salary FROM staff;
 --   ア: CHAR(4)    イ: DEFAULT '1234'    ウ: FOREIGN KEY    エ: SELECT
 -- Q28 の答え
 --   オ: CASCADE    カ: ON
+
+-- Q29（書くだけ。SQLiteでは実行できない）
+--   ALTER TABLE contract ADD CONSTRAINT uq_staff_carrier UNIQUE (staff_id, carrier_id);
+
+-- Q30
+CREATE TABLE dev_staff (
+    staff_id  CHAR(5)     NOT NULL,
+    name      VARCHAR(30) NOT NULL,
+    PRIMARY KEY (staff_id)
+);
+INSERT INTO dev_staff (staff_id, name)
+SELECT staff_id, name FROM staff WHERE dept_id = 'D02';
+SELECT * FROM dev_staff;   -- 3行
+
+-- Q31  （reset 直後なら5行。head_office と ga_division は 0。全体を流したあとは、Q15の追加で ga_division が 0 でなくなる）
+WITH dept_max AS (
+    SELECT dept_id, MAX(salary) AS max_salary FROM staff GROUP BY dept_id
+)
+SELECT department.department_name, COALESCE(dept_max.max_salary, 0) AS max_salary
+FROM department LEFT OUTER JOIN dept_max ON department.dept_id = dept_max.dept_id;
+
+-- Q32 の答え（表ごとに、C→R→U→D の順にまとめる）
+--           dev_staff  staff  contract  enrollment
+--   処理1   C          R
+--   処理2              R      U
+--   処理3                               D
+--   処理4              RU
+--   まとめ  C          RU     U         D
+--   （処理4は、自分の値を読んで更新するので RU。staff は、処理1・処理2の R と合わせて RU）

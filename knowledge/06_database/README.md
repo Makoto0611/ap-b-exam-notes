@@ -7,7 +7,7 @@
 | --- | --- |
 | `handson/sql.py` | SQLを実行して結果を表で見るツール（Python標準のsqlite3だけで動く） |
 | `handson/01_setup.sql` | 表とサンプルデータ（過去問の型を再現した自作データ） |
-| `handson/02_exercises.md` | 練習問題 Q1〜Q28（ヒントつき）と、毎日のやり方 |
+| `handson/02_exercises.md` | 練習問題 Q1〜Q32（ヒントつき）と、毎日のやり方 |
 | `handson/03_answers.sql` | 答え（先に見ない） |
 | `cheatsheet.md` | SQL構文表（問題文の手がかりつき） |
 | `01_condition_to_sql.md` | **条件の文→SQLの対応表**と例（CREATE/ALTER/GRANT/SELECT/更新）、練習P1〜P4。例は実行確認済み |
@@ -30,14 +30,14 @@ Python 3 の標準ライブラリだけで動くので、インストールは�
 
 ## 毎日
 - **総合問題（`06_integrated.md`）を1日1題**。4題をローテーションする（1題15〜20分）
-- 苦手な構文は、`02_exercises.md` のQ1〜Q28を辞書のように使って補う（1回の目安は3問）
+- 苦手な構文は、`02_exercises.md` のQ1〜Q32を辞書のように使って補う（1回の目安は3問）
 
 ## 全体の整理
 
 ### 2つの層
 | 層 | ファイル | 役割 | データ |
 | --- | --- | --- | --- |
-| 辞書 | `02_exercises.md`（Q1〜Q28）、`cheatsheet.md`、`01_condition_to_sql.md` | 型ごとの短い練習。構文の引き直し | `01_setup.sql`（部署・従業員・講座） |
+| 辞書 | `02_exercises.md`（Q1〜Q32）、`cheatsheet.md`、`01_condition_to_sql.md` | 型ごとの短い練習。構文の引き直し | `01_setup.sql`（部署・従業員・講座） |
 | 本番形式 | `06_integrated.md`（総合1〜4） | 1つの場面で、定義・検索・更新・設計を通して書く | `06_s1〜s4_data.sql` |
 
 答えは、辞書が `03_answers.sql`、総合が `06_answers.sql`。書き終えて実行したあとで見る。
@@ -64,6 +64,8 @@ Python 3 の標準ライブラリだけで動くので、インストールは�
 その題にしかない型: 総合2＝CASE式の1回のUPDATE・ON DELETE CASCADE・平均を比べる副問合せ、総合3＝3列の複合主キー・IN の定義域制約、総合4＝DEFAULT・NOT NULL・CHECK を重ねる順番・COALESCE・REVOKE・ROLLBACK。
 
 辞書のQだけにある型: Q9（複合キーの結合条件を2つ）、Q17（DEFAULTで入る値）、Q18（外部キー違反のエラー）、Q21（ALTER … ADD FOREIGN KEY）、Q23（DROP と DELETE の違い）。
+
+Level 8（Q29〜Q32）は、練習問題がなかった型の補強: `ALTER TABLE … ADD CONSTRAINT … UNIQUE`、`INSERT … SELECT`、`WITH` ＋ `MAX` ＋ `COALESCE`、CRUD図の読み取り。
 
 ### 時間が足りないとき
 - 型ごとに1問を選ぶ（例: 0件の外部結合＝総合1サ、「一度もない」＝総合1コ、HAVING＝総合1ケ、平均との比較＝総合2キ、CASEのUPDATE＝総合2コ、2表の更新＝総合1シ）

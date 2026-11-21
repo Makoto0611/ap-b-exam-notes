@@ -30,7 +30,7 @@ enrollment(staff_id→staff, course_code, session_no, result)  … 複合外部�
 | 水 | 3（集計・副問合せ） | Q10〜Q14 |
 | 木 | 4（更新） | Q15〜Q18 |
 | 金 | 5（定義） | Q19〜Q23 |
-| 土日 | 6（制御）＋7（過去問型） | Q24〜Q28 |
+| 土日 | 6（制御）＋7（過去問型）＋8（型の補強） | Q24〜Q32 |
 
 ---
 
@@ -149,6 +149,27 @@ SELECT ... FROM enrollment AS t0 INNER JOIN session AS t1
     カ  t0.course_code = t1.course_code  AND  t0.session_no = t1.session_no
 ```
 <details><summary>ヒント</summary>オ＝「連鎖して削除」を表す語。カ＝結合条件を書き始める語。Q9と Q22 をもう一度見る。</details>
+
+## Level 8 過去問によく出る型の補強
+ここまでの Level に、練習問題がなかった型。`python3 sql.py reset` のあとでやる。
+
+**Q29**（書くだけ）契約表(contract)に、同じ従業員(staff_id)が、同じ通信事業者(carrier_id)と、2回契約できないようにする。制約名を uq_staff_carrier として、ALTER TABLE で、2列の組の一意制約を追加する文を書く。
+<details><summary>ヒント</summary><code>ALTER TABLE 表 ADD CONSTRAINT 制約名 UNIQUE (列, 列)</code>。<b>括弧の中に2列を並べると、「2列の組」で重複を禁止する</b>（列ごとに別々の UNIQUE を付けるのとは違う）。主キーとの違いは、1つの表に複数付けられることと、NULL を許すこと。SQLiteは後から制約を足せないので、書いて答えと見比べる（db-fiddle で PostgreSQL を選べば、試せる）。</details>
+
+**Q30** 開発部の従業員だけを入れる表 dev_staff を作る。従業員ID(staff_id)（CHAR(5)・主キー）、氏名(name)（VARCHAR(30)・空にできない）。次に、従業員(staff)のうち部署(dept_id)が 'D02' の行の staff_id と name を、**1つの INSERT 文**で、dev_staff にまとめて追加する。追加したあとに SELECT して、3行入っていることを確認する。
+<details><summary>ヒント</summary><code>VALUES</code> の代わりに SELECT を書く: <code>INSERT INTO 表 (列, 列) SELECT 列, 列 FROM 表 WHERE 条件</code>。追加先の列の数と順番を、SELECT の列にそろえる。</details>
+
+**Q31** 部署(department)ごとの最高給与(salary)を、WITH で dept_max という名前を付けた検索にまとめ、部署名(department_name)と最高給与を表示する。従業員がいない部署も出し、その最高給与は 0 にする。（期待: reset 直後なら5行。head_office と ga_division は 0）
+<details><summary>ヒント</summary><code>WITH 名前 AS (SELECT …) SELECT … FROM …</code>。WITH の中は <code>GROUP BY</code> と <code>MAX</code>。全部署を残すので、外部結合の左は department。結合の右が空の行は NULL になるので、<code>COALESCE(列, 0)</code> で 0 にそろえる。</details>
+
+**Q32**（書くだけ）次の4つの処理を、表ごとに C・R・U・D で分ける。表は dev_staff、staff、contract、enrollment。
+```
+処理1 INSERT INTO dev_staff (staff_id, name) SELECT staff_id, name FROM staff WHERE dept_id = 'D02';
+処理2 UPDATE contract SET pin = '0000' WHERE staff_id IN (SELECT staff_id FROM staff WHERE salary > 400000);
+処理3 DELETE FROM enrollment WHERE staff_id = 'E0003';
+処理4 UPDATE staff SET salary = salary + 10000 WHERE dept_id = 'D02';
+```
+<details><summary>ヒント</summary>処理を1文ずつ、書込み先（C・U・D）と読み元（R）に分け、表ごとに記号を集める。同じ表が複数の処理に出てくる。まとめるときは、C→R→U→D の順。自分の値を読んで更新する（<code>SET 列 = 列 + 1</code>）と、RU になる。読み方の手順は <code>../02_design_basics.md</code> の 4-2。</details>
 
 ---
 
